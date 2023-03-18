@@ -1323,7 +1323,7 @@ form textarea {
         vertical-align: middle; }
       .forecast-container .forecast.today .degree .num {
         font-size: 90px;
-        font-size: 6.4285714286rem;
+        font-size: 6rem;
         margin-right: 30px; }
       .forecast-container .forecast.today span {
         margin-right: 20px; }
@@ -1347,6 +1347,8 @@ form textarea {
       .forecast-container .forecast .forecast-content .forecast-icon {
         margin-bottom: 20px; }
       .forecast-container .forecast .forecast-content .degree {
+        display: flex;
+        align-items: center;
         font-size: 24px;
         font-size: 1.7142857143em;
         color: white;
