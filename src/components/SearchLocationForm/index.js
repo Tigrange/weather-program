@@ -13,18 +13,22 @@ export const SearchLocationForom = ({
   const [locationVariants, setLocationVariants] = useState(null);
 
   const autocompleteLocation = (i) => {
-    axios
-      .get(
-        `${API_URL}/locations/v1/cities/autocomplete?apikey=${AcuWeather_api_key}&q=${i}`
-      )
-      .then((res) => {
-        if (res.data.length && res.status === 200) {
-          setLocationVariants(res.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (!i) {
+      setLocationVariants(null);
+    }else{
+      axios
+        .get(
+          `${API_URL}/locations/v1/cities/autocomplete?apikey=${AcuWeather_api_key}&q=${i}`
+        )
+        .then((res) => {
+          if (res.data.length && res.status === 200) {
+            setLocationVariants(res.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
   return (
     <div className="find-location-container">
