@@ -3,7 +3,6 @@ import {React, useEffect, useState,Suspense} from "react";
 import "./styles/main.css"
 import "./App.css"
 //assets
-import forecastIcon from "./assets/images/icons/icon-1.svg";
 import umbrellaIcon from "./assets/images/icon-umberella.png";
 import windIcon from "./assets/images/icon-wind.png";
 import compassIcon from "./assets/images/icon-compass.png";
@@ -11,7 +10,11 @@ import compassIcon from "./assets/images/icon-compass.png";
 //modules
 import axios from "axios";
 //variables
-import { API_URL,AcuWeather_api_key } from "./constants";
+import {
+  API_URL,
+  AcuWeather_api_key,
+  IpGeolocation_api_key,
+} from "./constants";
 //components
 import { SearchLocationForom } from "./components/SearchLocationForm";
 
@@ -23,55 +26,67 @@ function App() {
   const [metric,setMetric] = useState(true);
 
   const getDayName = (dateStr)=> {
-    var date = new Date(dateStr);
+    let date = new Date(dateStr);
     return date.toLocaleDateString("en-EN", { weekday: "long" });
   }
-  const selectLocationKeyHandler = (key)=>{
+  const selectLocationKeyHandler = async(key)=>{
     setLocationKey(key)
-    axios
+    if(key){
+          await axios
+            .get(
+              `${API_URL}/forecasts/v1/daily/5day/${key}?apikey=${AcuWeather_api_key}&metric=${metric}&details=true`
+            )
+            .then((res) => {
+              if (res.data.DailyForecasts.length && res.status === 200) {
+                setFiveDayForecastData(res.data.DailyForecasts);
+              }
+            })
+            .catch((err) => {
+              // alert(err);
+              console.log(err);
+            });
+    }else{
+      // alert("City Key is not defined")
+    }
+  }
+  const selectLocationLocalizedName = (city) => setLocationData({...locationData,region:city});
+  const getUserIpAddress = async() =>{
+    let ip_address,
+        locationKey;
+    await axios
       .get(
-        `${API_URL}/forecasts/v1/daily/5day/${key}?apikey=${AcuWeather_api_key}&metric=${metric}&details=true`
+        "https://ipgeolocation.abstractapi.com/v1/?api_key=" +
+          IpGeolocation_api_key
       )
       .then((res) => {
-        if (res.data.DailyForecasts.length && res.status === 200) {
-          setFiveDayForecastData(res.data.DailyForecasts);
-        }
-      })
-      .catch((err) => {
-        alert(err)
-        console.log(err);
+        setLocationData({
+          region: res.data.region,
+        });
+        ip_address = res.data.ip_address;
       });
-  }
-  const selectLocationLocalizedName = (city) => setLocationData(city);
-  const selectLocationByIpAddress = async() =>{
-    let 
-    ip_address,
-    apiKey = "6e775446082c4a91afb9e6eb287c6630";
-    await axios.get("https://ipgeolocation.abstractapi.com/v1/?api_key=" + apiKey).then((res)=>{
-      setLocationData(res.data.region);
-      ip_address = res.data.ip_address;
-    });
     await axios
       .get(
         `${API_URL}/locations/v1/cities/ipaddress?apikey=${AcuWeather_api_key}&q=${ip_address}`
       )
-      .then((res) => setLocationKey(res.data.Key))
+      .then((res) => {
+        setLocationKey(res.data.Key);
+        locationKey = res.data.Key;
+      })
       .catch((err) => console.log(err));
 
     if (locationKey && ip_address) {
       selectLocationKeyHandler(locationKey);
-    };
+    }
   }
-
+  //after metric change request
   useEffect(()=>{
     selectLocationKeyHandler(locationKey);
   },[metric]);
-
-  useEffect(()=>{
-    selectLocationByIpAddress();
+  //first render get ipaddres for location
+  useEffect(() => {
+    getUserIpAddress();
   },[]);
 
-  console.log(fiveDayForecastData, "fiveDayForecastData");
   return (
     <div className="App">
       <div className="hero">
@@ -104,7 +119,7 @@ function App() {
                   </div>
 
                   <div className="forecast-content">
-                    <div className="location">{locationData}</div>
+                    <div className="location">{locationData.region}</div>
                     <div className="degree">
                       <div className="num">
                         {fiveDayForecastData[0].Temperature.Maximum.Value}
@@ -134,9 +149,9 @@ function App() {
                     </span>
                   </div>
                 </div>
-                {fiveDayForecastData.map((i, index) => {
+                {fiveDayForecastData?.map((i, index) => {
                   return (
-                    <div className="forecast">
+                    <div className="forecast" key={index}>
                       <div className="forecast-header">
                         <div className="day">{getDayName(i.Date)}</div>
                       </div>
