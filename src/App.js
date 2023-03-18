@@ -1,7 +1,9 @@
 import {React, useEffect, useState,Suspense} from "react";
+
 //styles
 import "./styles/main.css"
 import "./App.css"
+
 //assets
 import umbrellaIcon from "./assets/images/icon-umberella.png";
 import windIcon from "./assets/images/icon-wind.png";
@@ -9,12 +11,14 @@ import compassIcon from "./assets/images/icon-compass.png";
 
 //modules
 import axios from "axios";
+
 //variables
 import {
   API_URL,
   AcuWeather_api_key,
   IpGeolocation_api_key,
 } from "./constants";
+
 //components
 import { SearchLocationForom } from "./components/SearchLocationForm";
 
