@@ -16,6 +16,7 @@ import {
 
 //components
 import { SearchLocationForom } from "components/SearchLocationForm";
+import SpinnerLoad from "components/SpinnerLoad";
 const ForecastTable = React.lazy(() => import("components/ForecastTable"));
 
 
@@ -102,12 +103,10 @@ function App() {
           />
         </div>
       </div>
-      {fiveDayForecastData && (
+      {fiveDayForecastData ? (
         <Suspense
           fallback={
-            <div className="container">
-              <h1 style={{ color: "white",textAlign:'center',marginTop:10 }}>Please Wait...</h1>
-            </div>
+            <div className="container"><SpinnerLoad/></div>
           }
         >
           <ForecastTable
@@ -115,6 +114,8 @@ function App() {
             locationData={locationData}
           />
         </Suspense>
+      ) : (
+            <div className="container"><SpinnerLoad/></div>
       )}
     </div>
   );

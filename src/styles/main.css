@@ -1207,6 +1207,7 @@ form textarea {
 
 .hero {
   background-image: url('../assets/images/banner.jpg');
+  background-position-y: 55%;
   background-size: cover;
   padding: 70px 0;
   min-height: 350px; }
@@ -1355,6 +1356,9 @@ form textarea {
         font-size: 1.7142857143em;
         color: white;
         font-weight: 700; }
+        .forecast-container .forecast:not(.today) .forecast-content .degree{
+          justify-content: center;
+        }
       .forecast-container .forecast .forecast-content small {
         font-size: 16px;
         font-size: 1.1428571429em; }
